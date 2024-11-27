@@ -42,7 +42,7 @@ class Board:
         self.spaces.append(Tax("Super Tax", 100))
         self.spaces.append(Property("Mayfair", 400, 50, "Dark Blue"))
 
-    def __str__(self): #TODO: make players appear on the board
+    def __str__(self): #TODO: make players appear on the board - Marcus
         return """
         ╔═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╗
         ║F P║STR║CHA║FLT║TRF║FNS║LST║COV║W W║PIC║GTJ║
