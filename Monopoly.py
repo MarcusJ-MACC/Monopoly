@@ -111,7 +111,7 @@ class Property(Space):
             player.buy(self)
         else:
             player.pay(self.owner, self.rent)
-            # TODO: double rent if full set owned
+            # TODO: double rent if full set owned - Seth
 
 class Station(Property):
     def __init__(self, name):
@@ -134,9 +134,9 @@ class Utility(Property):
         if self.owner is None:
             player.buy(self)
         else:
-            pass # TODO: pay rent = 4 x dice roll (or 10x if both owned)
+            pass # TODO: pay rent = 4 x dice roll (or 10x if both owned) - Seth
 
-# TODO: implement player logic
+# TODO: implement player logic - Marcus
 class Player:
     def __init__(self, name, game_piece):
         self.name = name
@@ -169,14 +169,14 @@ class Game:
         self.players = []
 
     def add_player(self):
-        pass # TODO: add a player with name, game piece, starting money, etc
+        pass # TODO: add a player with name, game piece, starting money, etc - Helena
 
     def setup(self):
-        num_players = int(input("How many players? ")) # TODO: add error handling for bad inputs
+        num_players = int(input("How many players? ")) # TODO: add error handling for bad inputs - Helena
         for i in range(num_players):
             self.add_player()
         
-        current_player = self.players[0] # TODO: have players roll 1d6 to see who goes first
+        current_player = self.players[0] # TODO: have players roll 1d6 to see who goes first - Helena
 
         game_over = False
         while not game_over:
@@ -185,7 +185,7 @@ class Game:
             input("press enter to roll")
             current_player.move()
             current_player.current_space.on_land(current_player)
-            # TODO: roll again on double, send to jail on triple-double
+            # TODO: roll again on double, send to jail on triple-double - Helena
 
             next_player = self.players[(self.players.index(current_player) + 1) % len(self.players)]
             if current_player.is_bankrupt():
