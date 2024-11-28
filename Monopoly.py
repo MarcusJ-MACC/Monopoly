@@ -157,12 +157,13 @@ class Player:
         self.money -= amount
 
     def pay(self, player, amount):
-        self.money -= amount
-        if self.money <= 0:
-            player.money += amount + self.money
-            self.is_bankrupt()
-        else:
-            player.money += amount 
+        if self != player:
+            self.money -= amount
+            if self.money <= 0:
+                player.money += amount + self.money
+                self.is_bankrupt()
+            else:
+                player.money += amount 
 
     def go_to_jail(self):
         self.current_space = self.board.spaces[10]
