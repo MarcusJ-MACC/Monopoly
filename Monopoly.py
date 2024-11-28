@@ -141,30 +141,63 @@ class Utility(Property):
 
 # TODO: implement player logic - Marcus
 class Player:
-    def __init__(self, name, game_piece):
+    def __init__(self, name, game_piece, Board):
         self.name = name
         self.gamer_piece = game_piece
         self.money = 0
         self.properties = []
         self.current_space = None
+        self.board = Board
+        self.jailed = False
 
     def add_money(self, amount):
-        pass
+        self.money += amount
 
     def pay_bank(self, amount):
-        pass
+        self.money -= amount
 
     def pay(self, player, amount):
-        pass
+        self.money -= amount
+        if self.money <= 0:
+            player.money += amount + self.money
+            self.is_bankrupt()
+        else:
+            player.money += amount 
 
     def go_to_jail(self):
-        pass
+        self.current_space = self.board.spaces[10]
 
-    def move(self):
-        pass # TODO: player rolls dice, moves that many spaces
+    def move(self, board):
+        roll_one = Dice_Roll()
+        roll_two = Dice_Roll()
+        currentIndex = self.Board.spaces.find(self.current_space)
+        currentIndex = (currentIndex+roll_one + roll_two) % len(self.Board.spaces) - 1
+        self.current_space = self.board.spaces[currentIndex]
+        return [roll_one, roll_two]
+        # TODO: player rolls dice, moves that many spaces
 
     def is_bankrupt(self):
-        pass
+        if self.money <= 0:
+            return True
+        
+    def num_owned(self,set_):
+        num = 0
+        for Owned in self.properties:
+            if Owned.set == set_:
+                num+=1
+        return num
+    
+    def set_owned(self, set_):
+        if set_ == "Brown" or set_=="Dark Blue":
+            if self.num_owned(set_) == 2:
+                return True
+            else:
+                return False
+        else:
+            if self.num_owned(set_) == 3:
+                return True
+            else:
+                return False
 
 class Game:
     def __init__(self):
@@ -177,7 +210,7 @@ class Game:
     def setup(self):
         num_players = int(input("How many players? ")) # TODO: add error handling for bad inputs - Helena
         for i in range(num_players):
-            self.add_player()
+            self.add_player(self.board)
         
         current_player = self.players[0] # TODO: have players roll 1d6 to see who goes first - Helena
 
@@ -186,7 +219,7 @@ class Game:
             print(self.board)
             print(f"{current_player.name}'s turn:")
             input("press enter to roll")
-            current_player.move()
+            current_player.move(self.board)
             current_player.current_space.on_land(current_player)
             # TODO: roll again on double, send to jail on triple-double - Helena
 
