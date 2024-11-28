@@ -1,3 +1,6 @@
+import random
+def Dice_Roll():
+    return random.randint(1,6)
 class Board:
     def __init__(self):
         self.spaces = []
