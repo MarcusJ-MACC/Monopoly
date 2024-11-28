@@ -199,6 +199,22 @@ class Player:
                 return True
             else:
                 return False
+                
+    def buy(self, Property):
+        playerInput = None
+        if self.money < Property.rent:
+            print(f"You cannot buy {Property.name}")
+            playerInput = "n"
+        
+        while not playerInput:
+            playerInput = input(f"Do you want to buy {Property.name}? (y/n)").lower()
+            if playerInput not in ["y","n"]:
+                playerInput = None
+                print("Input needs to be 'y' or 'n'")
+        if playerInput == "y":
+            self.pay_bank(Property.rent)
+            self.properties.append(Property)
+            Property.owner=self
 
 class Game:
     def __init__(self):
