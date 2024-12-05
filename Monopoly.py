@@ -46,7 +46,7 @@ class Board:
         self.spaces.append(Property("Mayfair", 400, 50, "Dark Blue"))
 
     def __str__(self): #TODO: make players appear on the board - Marcus
-        return """
+        board = """
         ╔═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╗
         ║F P║STR║CHA║FLT║TRF║FNS║LST║COV║W W║PIC║GTJ║
         ╠═══╬═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╬═══╣
@@ -71,6 +71,30 @@ class Board:
         ║J V║PTV║EUS║CHA║TAI║KCS║I T║WCR║C C║OKR║G O║
         ╚═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╝
         """
+        CurrentPlayerIndexes = []
+        for i in range(len(self.spaces)):
+            if len(self.spaces[i].currentPlayers)>0:
+                CurrentPlayerIndexes.append([self.spaces[i].currentPlayers[0],i])
+        #NOTE: board[54*(2n-1):54*(2n)] gives the nth row of the board
+        #NOTE: board[54*(2*row-1)+10+4*(col-1):54*(2*row-1)+10+4*(col-1)+3] returns the string of whatever is at the space on row,column e.g. row=1 col=1 returns "F P", row=11 col=5 returns "TAI"
+        rows = []
+        columns = []
+        for i in CurrentPlayerIndexes:
+            if i <=10:
+                rows.append(11)
+                columns.append(11-i)
+            elif i<=19:
+                columns.append[1]
+                rows.append(11-i%10)
+            elif i<=30:
+                rows.append(1)
+                columns.append(11-i%10)
+            else:
+                columns.append(11)
+                rows.append(11-i%10)
+        row = 11
+        col = 5
+        return board[54*(2*row-1)+10+4*(col-1):54*(2*row-1)+10+4*(col-1)+3]
 
 class Space:
     def __init__(self, name):
@@ -140,7 +164,6 @@ class Utility(Property):
             player.buy(self)
         else:
             pass # TODO: pay rent = 4 x dice roll (or 10x if both owned) - Seth
-
 # TODO: implement player logic - Marcus
 class Player:
     def __init__(self, name, game_piece, Board):
@@ -221,7 +244,7 @@ class Player:
             Property.owner=self
     def __str__(self):
         return self.gamer_piece[0:3].upper()
-
+print(Board())
 class Game:
     def __init__(self):
         self.board = Board()
