@@ -71,12 +71,14 @@ class Board:
         ║J V║PTV║EUS║CHA║TAI║KCS║I T║WCR║C C║OKR║G O║
         ╚═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╝
         """
+
 class Space:
     def __init__(self, name):
         self.name = name
+        self.currentPlayers = []
 
     def on_land(self, player):
-        pass
+        self.currentPlayers.append(player)
 
 class Go_Space(Space):
     def __init__(self):
@@ -143,6 +145,8 @@ class Utility(Property):
 class Player:
     def __init__(self, name, game_piece, Board):
         self.name = name
+        if game_piece not in ["thimble", "boot", "cannon", "battleship", "car", "terrier dog"]:
+            raise ValueError("Piece must be one of thimble, boot, cannon, battleship, car, or terrier dog")
         self.gamer_piece = game_piece
         self.money = 0
         self.properties = []
@@ -174,6 +178,7 @@ class Player:
         currentIndex = self.Board.spaces.find(self.current_space)
         currentIndex = (currentIndex+roll_one + roll_two) % len(self.Board.spaces) - 1
         self.current_space = self.board.spaces[currentIndex]
+        self.current_space.currentPlayers.pop(0)
         return [roll_one, roll_two]
         # TODO: player rolls dice, moves that many spaces
 
@@ -199,7 +204,6 @@ class Player:
                 return True
             else:
                 return False
-                
     def buy(self, Property):
         playerInput = None
         if self.money < Property.rent:
@@ -215,6 +219,8 @@ class Player:
             self.pay_bank(Property.rent)
             self.properties.append(Property)
             Property.owner=self
+    def __str__(self):
+        return self.gamer_piece[0:3].upper()
 
 class Game:
     def __init__(self):
