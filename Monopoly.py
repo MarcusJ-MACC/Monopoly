@@ -84,17 +84,19 @@ class Board:
                 rows.append(11)
                 columns.append(11-i)
             elif i<=19:
-                columns.append[1]
+                columns.append(1)
                 rows.append(11-i%10)
             elif i<=30:
                 rows.append(1)
-                columns.append(11-i%10)
+                columns.append(i-19)
             else:
                 columns.append(11)
-                rows.append(11-i%10)
-        row = 11
-        col = 5
-        return board[54*(2*row-1)+10+4*(col-1):54*(2*row-1)+10+4*(col-1)+3]
+                rows.append(i%10+1)
+        for i in range(len(rows)):
+            row=rows[i]
+            col=columns[i]
+            print(board[54*(2*row-1)+10+4*(col-1):54*(2*row-1)+10+4*(col-1)+3])
+        return ""
 
 class Space:
     def __init__(self, name):
