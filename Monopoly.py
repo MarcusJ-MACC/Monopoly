@@ -1,6 +1,11 @@
 import random
 def Dice_Roll():
     return random.randint(1,6)
+class InvalidPieceException(Exception):
+    pass
+class OutOfRangeError(Exception):
+    pass
+        
 class Board:
     def __init__(self):
         self.spaces = []
@@ -45,7 +50,7 @@ class Board:
         self.spaces.append(Tax("Super Tax", 100))
         self.spaces.append(Property("Mayfair", 400, 50, "Dark Blue"))
 
-    def __str__(self): #TODO: make players appear on the board - Marcus
+    def __str__(self): #TODO: make players appear on the board - Marcus DONE
         board = """
         ╔═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╦═══╗
         ║F P║STR║CHA║FLT║TRF║FNS║LST║COV║W W║PIC║GTJ║
@@ -178,7 +183,7 @@ class Player:
     def __init__(self, name, game_piece, Board):
         self.name = name
         if game_piece not in ["thimble", "boot", "cannon", "battleship", "car", "terrier dog"]:
-            raise ValueError("Piece must be one of thimble, boot, cannon, battleship, car, or terrier dog")
+            raise InvalidPieceException("Piece must be one of thimble, boot, cannon, battleship, car, or terrier dog")
         self.gamer_piece = game_piece
         self.money = 0
         self.properties = []
@@ -208,11 +213,12 @@ class Player:
         roll_one = Dice_Roll()
         roll_two = Dice_Roll()
         currentIndex = self.Board.spaces.find(self.current_space)
+        self.current_space.currentPlayers.pop(0)
         currentIndex = (currentIndex+roll_one + roll_two) % 40
         self.current_space = self.board.spaces[currentIndex]
-        self.current_space.currentPlayers.pop(0)
+        self.current_space.currentPlayers.append(self)
         return [roll_one, roll_two]
-        # TODO: player rolls dice, moves that many spaces
+        # TODO: player rolls dice, moves that many spaces DONE
 
     def is_bankrupt(self):
         if self.money <= 0:
@@ -259,13 +265,43 @@ class Game:
         self.board = Board()
         self.players = []
 
-    def add_player(self):
-        pass # TODO: add a player with name, game piece, starting money, etc - Helena
+    def add_player(self, name, game_piece, board):
+        new_player = Player(name, game_piece, board)
+        new_player.current_space = board.spaces[0]
+        print(new_player.gamer_piece)
+        board.spaces[0].currentPlayers.append(new_player)
+        self.players.append(Player)
+        # TODO: add a player with name, game piece, starting money, etc - Helena
 
     def setup(self):
-        num_players = int(input("How many players? ")) # TODO: add error handling for bad inputs - Helena
+        while True:
+            try:
+                num_players = int(input("How many players? ")) # TODO: add error handling for bad inputs - Helena
+                if num_players < 2 or num_players > 6:
+                    raise OutOfRangeError
+                break
+            except OutOfRangeError:
+                print("You must enter a number between 2 and 6 inclusive")
+            except ValueError:
+                print("You must enter an integer")
         for i in range(num_players):
-            self.add_player(self.board)
+            while True:
+                name = input(f"Player {i+1} enter your name: ")
+                if len(name) < 3:
+                    print("Name must be at least 3 characters")
+                else:
+                    break
+            while True:
+                try:
+                    game_piece = input("Enter your preferred game piece")
+                    for j in self.players:
+                        if game_piece == j.gamer_piece:
+                            raise InvalidPieceException
+                    self.add_player(name,game_piece,self.board)
+                    break
+                except InvalidPieceException:
+                    print("Piece must be one of thimble, boot, cannon, battleship, car, or terrier dog and not already picked")
+            
         
         current_player = self.players[0] # TODO: have players roll 1d6 to see who goes first - Helena
 
@@ -311,3 +347,4 @@ class Game:
 # Player4.current_space = board.spaces[25]
 # board.spaces[25].currentPlayers.append(Player4)
 # print(board)
+Game().setup()
