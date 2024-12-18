@@ -71,32 +71,39 @@ class Board:
         ║J V║PTV║EUS║CHA║TAI║KCS║I T║WCR║C C║OKR║G O║
         ╚═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╩═══╝
         """
-        CurrentPlayerIndexes = []
+        CurrentPlayerIndexes = {}
+        Counter = 0
         for i in range(len(self.spaces)):
-            if len(self.spaces[i].currentPlayers)>0:
-                CurrentPlayerIndexes.append([self.spaces[i].currentPlayers[0],i])
+            numPlayers = len(self.spaces[i].currentPlayers)
+            if numPlayers==1:
+                CurrentPlayerIndexes.update({self.spaces[i].currentPlayers[0]:i})
+            elif numPlayers > 1:
+                Counter+=1
+                print("space", Counter, "players",end=": ")
+                for j in self.spaces[i].currentPlayers:
+                    print(j.name, end=" ")
+                print()
+                CurrentPlayerIndexes.update({f" {Counter} ":i})
         #NOTE: board[54*(2n-1):54*(2n)] gives the nth row of the board
         #NOTE: board[54*(2*row-1)+10+4*(col-1):54*(2*row-1)+10+4*(col-1)+3] returns the string of whatever is at the space on row,column e.g. row=1 col=1 returns "F P", row=11 col=5 returns "TAI"
-        rows = []
-        columns = []
-        for i in CurrentPlayerIndexes:
-            if i <=10:
-                rows.append(11)
-                columns.append(11-i)
-            elif i<=19:
-                columns.append(1)
-                rows.append(11-i%10)
-            elif i<=30:
-                rows.append(1)
-                columns.append(i-19)
+        playerSpaces = []
+        for i in CurrentPlayerIndexes.keys():
+            player=i
+            index=CurrentPlayerIndexes[player]
+            if index <=10:
+                playerSpaces.append({"row":11, "column":11-index,"player":player})
+            elif index<=19:
+                playerSpaces.append({"row":11-index%10, "column":1,"player":player})
+            elif index<=30:
+                playerSpaces.append({"row":1, "column":index-19,"player":player})
             else:
-                columns.append(11)
-                rows.append(i%10+1)
-        for i in range(len(rows)):
-            row=rows[i]
-            col=columns[i]
-            print(board[54*(2*row-1)+10+4*(col-1):54*(2*row-1)+10+4*(col-1)+3])
-        return ""
+                playerSpaces.append({"row":11, "column":index%10+1,"player":player})
+        for i in playerSpaces:
+            row=i["row"]
+            col=i["column"]
+            player=i["player"]
+            board=board.replace(board[54*(2*row-1)+10+4*(col-1):54*(2*row-1)+10+4*(col-1)+3],str(player))
+        return board
 
 class Space:
     def __init__(self, name):
@@ -201,7 +208,7 @@ class Player:
         roll_one = Dice_Roll()
         roll_two = Dice_Roll()
         currentIndex = self.Board.spaces.find(self.current_space)
-        currentIndex = (currentIndex+roll_one + roll_two) % len(self.Board.spaces) - 1
+        currentIndex = (currentIndex+roll_one + roll_two) % 40
         self.current_space = self.board.spaces[currentIndex]
         self.current_space.currentPlayers.pop(0)
         return [roll_one, roll_two]
@@ -246,7 +253,7 @@ class Player:
             Property.owner=self
     def __str__(self):
         return self.gamer_piece[0:3].upper()
-print(Board())
+
 class Game:
     def __init__(self):
         self.board = Board()
@@ -284,3 +291,23 @@ class Game:
         {current_player.name} wins!
         They had £{current_player.money}
         """)
+#DEBUG CODE
+# board=Board()
+# Player1=Player("a","thimble",board)
+# Player2=Player("b","boot", board)
+
+# Player1.current_space = board.spaces[15]
+# board.spaces[15].currentPlayers.append(Player1)
+
+# Player2.current_space = board.spaces[15]
+# board.spaces[15].currentPlayers.append(Player2)
+
+# Player3=Player("c","battleship",board)
+# Player4=Player("d","terrier dog", board)
+
+# Player3.current_space = board.spaces[25]
+# board.spaces[25].currentPlayers.append(Player3)
+
+# Player4.current_space = board.spaces[25]
+# board.spaces[25].currentPlayers.append(Player4)
+# print(board)
